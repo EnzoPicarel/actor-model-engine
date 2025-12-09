@@ -1,5 +1,3 @@
-import { group } from "console";
-
 const right: Position = {
     x: 1,
     y: 0
@@ -68,35 +66,35 @@ enum LineType {
     River
 };
 
-// Retourne un acteur avec une position définie et une action de déplacement initialisée
+// Returns an actor with a defined position and initialized movement action
 function make_actor(p: Position, n: Name): Actor {
     const a: Actor = {
         location: p,
-        mailbox: [],  // Boîte aux lettres vide au départ
+        mailbox: [],  // Empty mailbox at start
         send: (m: Message): void => {
             // console.log(`The actor ${n} sent the message: ${m.key}`, m.params);
         },
         actions: {},
         update: (actor: Actor): Actor => {
-            // Créer un nouvel acteur avec les mêmes propriétés mais une boîte vide
+            // Create a new actor with the same properties but empty mailbox
             let updatedActor = make_actor(actor.location, actor.name);
 
-            // Copier les actions
+            // Copy actions
             updatedActor.actions = { ...actor.actions };
 
             const valid_actions = actor.mailbox.filter((msg) => Boolean(actor.actions[msg.key]));
             updatedActor = valid_actions.reduce((updatedActor, msg) => actor.actions[msg.key](updatedActor, ...msg.params), updatedActor);
 
-            // Vider la boîte aux lettres
+            // Clear the mailbox
             updatedActor.mailbox = [];
 
-            // Retourner l'acteur mis à jour
+            // Return the updated actor
             return updatedActor;
         },
         name: n
     };
 
-    // Définir les actions standard
+    // Define standard actions
     a.actions.move = (a: Actor, dx: Position): Actor => {
         const newActor = make_actor(position_add(a.location, dx), n);
         newActor.actions = { ...a.actions };
@@ -111,7 +109,7 @@ function make_actor(p: Position, n: Name): Actor {
     };
 
     a.actions.tick = (a: Actor): Actor => {
-        // Implémenter le comportement automatique selon le type d'acteur
+        // Implement automatic behavior based on actor type
         const newActor = make_actor(a.location, a.name);
         newActor.actions = { ...a.actions };
 
@@ -136,7 +134,7 @@ function make_actor(p: Position, n: Name): Actor {
     return a;
 }
 
-// Mettre à jour la position courante avec un changement dx
+// Update current position with a dx change
 function position_add(current_position: Position, dx: Position): Position {
     const pos: Position = {
         x: current_position.x + dx.x,
@@ -147,49 +145,50 @@ function position_add(current_position: Position, dx: Position): Position {
 
 
 let river_direction = 0;
-let nb_generated_line = 0;
+let num_generated_lines = 0;
 let difficulty = 1;
 const level_size = 20;
-function init_line(size_x: number, size_y: number, is_start: boolean, nb_line: number): Line {
-    if (is_start && nb_generated_line > nb_line) {
-        nb_generated_line = 0;
+
+function init_line(size_x: number, size_y: number, is_start: boolean, num_lines: number): Line {
+    if (is_start && num_generated_lines > num_lines) {
+        num_generated_lines = 0;
         difficulty = 1;
     }
-    nb_generated_line += 1;
-    let is_void = 1;
-    if (nb_generated_line > nb_line && nb_generated_line % level_size === 0) {
+    num_generated_lines += 1;
+    let is_empty = 1;
+    if (num_generated_lines > num_lines && num_generated_lines % level_size === 0) {
         difficulty += 1;
     }
     if (difficulty < 5) {
-        if (nb_generated_line % 2 === 0) {
-            is_void = 0;
+        if (num_generated_lines % 2 === 0) {
+            is_empty = 0;
         }
     }
     else {
-        is_void = 1;
+        is_empty = 1;
     }
 
-    let random_line: number = Math.random();
-    if (random_line <= Math.max(0, 0.7 - difficulty * 0.03)) {
-        random_line = 1;
+    let random_line_type: number = Math.random();
+    if (random_line_type <= Math.max(0, 0.7 - difficulty * 0.03)) {
+        random_line_type = 1;
     }
-    else if (random_line > Math.max(0, 0.7 - difficulty * 0.03) && random_line < Math.max(0.6, 0.9 - difficulty * 0.01)) {
-        random_line = 2;
+    else if (random_line_type > Math.max(0, 0.7 - difficulty * 0.03) && random_line_type < Math.max(0.6, 0.9 - difficulty * 0.01)) {
+        random_line_type = 2;
     }
     else {
-        random_line = 3;
+        random_line_type = 3;
     }
 
-    const obstacleProbability = Math.min(difficulty * 0.03, 0.8);  // De 0% à 80%
+    const obstacleProbability = Math.min(difficulty * 0.03, 0.8);  // From 0% to 80%
 
     const l: Line = {
         ordinate: size_y,
-        type: random_line,
+        type: random_line_type,
         data: new Array(size_x).fill(make_actor({ x: 0, y: size_y }, Name.Empty)),
         pattern: new Array(size_x).fill(0),
         patternIndex: 0
     };
-    if (is_start || is_void === 0) {
+    if (is_start || is_empty === 0) {
         l.data = l.data.map((_, i) => make_actor({ x: i, y: size_y }, Name.Empty));
         return l;
     }
@@ -207,7 +206,7 @@ function init_line(size_x: number, size_y: number, is_start: boolean, nb_line: n
             l.pattern = generateObstaclePattern(size_x, obstacleProbability);
             break;
         default:
-            console.log("Inexistant type of line or start line that shouldn't be here");
+            console.log("Non-existent line type or start line that shouldn't be here");
             break;
     }
     return l;
@@ -230,7 +229,7 @@ function generateObstaclePattern(size_x: number, probability: number): number[] 
 function generatePatternedLine(size_x: number, obstacleType: Name, probability: number, y: number): Array<any> {
     const linePattern = generateObstaclePattern(size_x, probability);
     return [...Array(size_x)].map((_, i) => {
-        if (linePattern[i] === 1) { // si obstacle
+        if (linePattern[i] === 1) { // if obstacle
             return make_actor({ x: i, y }, obstacleType);
         }
         else if (obstacleType === Name.Water_L) {
