@@ -31,8 +31,8 @@ let score = 0;
 
 type World = {
     lines: A.Line[];
-    poulet: A.Actor;
-    arrayProj: A.Actor[];
+    chicken: A.Actor;
+    projectiles: A.Actor[];
 }
 
 function run() {
@@ -77,15 +77,15 @@ function run() {
     const frameX = Math.floor((screenWidth - mapWidth) / 2);
     const frameY = titleStartY + titleArt.length;
     const line_length: number = mapWidth - 2;
-    const nb_line: number = mapHeight - 2;
+    const num_lines: number = mapHeight - 2;
     let progression = 0;
     let stop = false;
 
 
-    //variable pour la barre de projectile
-    const barreTaille = 10;
-    const barreX = (frameY + mapHeight) * 3;
-    const barreY = (mapWidth / 3) + 3;
+    // Variables for the projectile bar
+    const bar_size = 10;
+    const bar_x = (frameY + mapHeight) * 3;
+    const bar_y = (mapWidth / 3) + 3;
 
 
     function drawFrame() {
@@ -123,28 +123,28 @@ function run() {
 
     drawFrame();
 
-    function make_world(actors: A.Line[], poulet: A.Actor, arrayProj: A.Actor[]): World {
+    function make_world(actors: A.Line[], chicken: A.Actor, projectiles: A.Actor[]): World {
         const world: World = {
             lines: actors,
-            poulet: poulet,
-            arrayProj: arrayProj,
+            chicken: chicken,
+            projectiles: projectiles,
         };
         return world;
     }
 
     function tick_world(world: World): World {
         progression++;
-        if (world.poulet.location.y < mapHeight - 2) {
-            world.poulet.mailbox.push({ "key": "move", "params": [A.down] });
+        if (world.chicken.location.y < mapHeight - 2) {
+            world.chicken.mailbox.push({ "key": "move", "params": [A.down] });
         }
         else {
             gameOver();
         }
-        return make_world(world.lines.map((l: A.Line) => tickLine(l)), world.poulet.update(world.poulet), world.arrayProj);
+        return make_world(world.lines.map((l: A.Line) => tickLine(l)), world.chicken.update(world.chicken), world.projectiles);
     }
 
     function update_world(world: World): World {
-        const new_world = make_world(world.lines.map((l: A.Line) => drawLine(l)), drawActor(world.poulet, world.poulet.location.x, world.poulet.location.y), world.arrayProj.map((p: A.Actor) => drawActor(p, p.location.x, p.location.y)));
+        const new_world = make_world(world.lines.map((l: A.Line) => drawLine(l)), drawActor(world.chicken, world.chicken.location.x, world.chicken.location.y), world.projectiles.map((p: A.Actor) => drawActor(p, p.location.x, p.location.y)));
         screenBuffer.draw({ delta: true });
         return new_world;
     }
@@ -155,7 +155,7 @@ function run() {
     function tickLine(l: A.Line): A.Line {
         if (l.ordinate < 0) {
             count_void++;
-            return A.init_line(line_length, nb_line - 1, false, nb_line);
+            return A.init_line(line_length, num_lines - 1, false, num_lines);
         }
         l.data.map((a: A.Actor) => a.mailbox.push({ "key": "move", "params": [A.down] }));
         l.ordinate -= 1;
@@ -175,20 +175,20 @@ function run() {
 
     const world_buffer_size: number = 10;
 
-    const lines: A.Line[] = new Array(nb_line).fill(null).map((_, i: number) => A.init_line(line_length, i, true, nb_line));
+    const lines: A.Line[] = new Array(num_lines).fill(null).map((_, i: number) => A.init_line(line_length, i, true, num_lines));
 
-    const posInit: A.Position = {
-        x: Math.floor(line_length / 2), // Utiliser line_length au lieu de mapWidth
-        y: Math.floor(nb_line / 2)      // Utiliser nb_line au lieu de mapHeight
+    const initial_position: A.Position = {
+        x: Math.floor(line_length / 2),
+        y: Math.floor(num_lines / 2)
     };
-    const poulet: A.Actor = A.make_actor(posInit, A.Name.Chicken);
+    const chicken: A.Actor = A.make_actor(initial_position, A.Name.Chicken);
 
-    const arrayProj: A.Actor[] = new Array;
+    const projectiles: A.Actor[] = new Array;
 
-    let world_buffer: World[] = new Array(world_buffer_size).fill(make_world(lines, poulet, arrayProj));
-    world_buffer[world_buffer_size - 1] = make_world(lines, poulet, arrayProj);
+    let world_buffer: World[] = new Array(world_buffer_size).fill(make_world(lines, chicken, projectiles));
+    world_buffer[world_buffer_size - 1] = make_world(lines, chicken, projectiles);
 
-    let nbProj = 10;
+    let num_projectiles = 10;
 
     let accTick = 0;
     let accUpdate = 0;
@@ -202,23 +202,23 @@ function run() {
         if (accTick > TICK_RATE) {
             accTick = 0;
 
-            // Afficher le texte des projectiles
-            const ProjectileTXT = nbProj > 1 ? " PROJECTILES." : " PROJECTILE. ";
+            // Display projectile text
+            const projectile_text = num_projectiles > 1 ? " PROJECTILES." : " PROJECTILE. ";
             screenBuffer.put({
                 x: (frameY + mapHeight) * 3,
                 y: (mapWidth / 3) + 2,
                 attr: { color: "white", bgcolor: "black" }
-            }, "IL VOUS RESTE " + nbProj + ProjectileTXT);
+            }, "REMAINING: " + num_projectiles + projectile_text);
 
-            if (nbProj < 10)
-                nbProj++;
+            if (num_projectiles < 10)
+                num_projectiles++;
 
-            // Dessiner la barre de projectiles
-            for (let i = 0; i < barreTaille; i++) {
-                const char = i < nbProj ? "🔥" : ' ';
+            // Draw projectile bar
+            for (let i = 0; i < bar_size; i++) {
+                const char = i < num_projectiles ? "🔥" : ' ';
                 screenBuffer.put({
-                    x: barreX + (i * 2),
-                    y: barreY,
+                    x: bar_x + (i * 2),
+                    y: bar_y,
                     attr: {
                         color: "white",
                         bgcolor: "black"
@@ -233,7 +233,7 @@ function run() {
         if (accUpdate > UPDATE_RATE) {
             const update_current_world = get_current_world();
             accUpdate = 0;
-            world_buffer[world_buffer_size - 1] = update_world(make_world(update_current_world.lines, update_current_world.poulet, update_current_world.arrayProj.map((proj: A.Actor) => {
+            world_buffer[world_buffer_size - 1] = update_world(make_world(update_current_world.lines, update_current_world.chicken, update_current_world.projectiles.map((proj: A.Actor) => {
                 proj.mailbox.push({ "key": "move", "params": [A.up] });
                 return proj.update(proj);
             }).filter((proj: A.Actor) => proj.location.y > 1)));
@@ -254,7 +254,7 @@ function run() {
             accCar = 0;
             car_move(get_current_world());
         }
-        screenBuffer.put({ x: frameY + mapHeight, y: (mapWidth / 3) + 2, attr: { color: "white", bgcolor: "black" } }, "SCORE : " + score);
+        screenBuffer.put({ x: frameY + mapHeight, y: (mapWidth / 3) + 2, attr: { color: "white", bgcolor: "black" } }, "SCORE: " + score);
         stop = false;
         accTick += FRAME_RATE;
         accUpdate += FRAME_RATE;
@@ -264,7 +264,7 @@ function run() {
     }, FRAME_RATE);
 
     function drawActor(a: A.Actor, x: number, y: number): A.Actor {
-        if (y > nb_line) return a.update(a);
+        if (y > num_lines) return a.update(a);
 
         const screenX = frameX + x + 1;
         const screenY = frameY + y;
@@ -285,7 +285,7 @@ function run() {
 
 
     function drawLine(l: A.Line): A.Line {
-        l.data = l.data.map((a: A.Actor) => drawActor(a, a.location.x, nb_line - l.ordinate + 1));
+        l.data = l.data.map((a: A.Actor) => drawActor(a, a.location.x, num_lines - l.ordinate + 1));
         return l;
     }
 
@@ -294,7 +294,7 @@ function run() {
             if (actor.name === A.Name.Car_R || actor.name === A.Name.Log_R || actor.name === A.Name.Water_R) return 'right';
             if (actor.name === A.Name.Car_L || actor.name === A.Name.Log_L || actor.name === A.Name.Water_L) return 'left';
         }
-        return null; // aucune voiture trouvée
+        return null;
     }
 
     function car_move(current_world: World) {
@@ -330,11 +330,11 @@ function run() {
         const rivers = current_world.lines.filter((l) => l.type === 3);
         rivers.map((r) => {
             r.data.forEach((a) => {
-                const realY_log = nb_line - r.ordinate + 1;
-                if (a.location.x === current_world.poulet.location.x && realY_log === current_world.poulet.location.y && a.name === A.Name.Log_R)
-                    current_world.poulet.mailbox.push({ "key": "move", "params": [A.right] });
-                else if (a.location.x === current_world.poulet.location.x && realY_log === current_world.poulet.location.y && a.name === A.Name.Log_L)
-                    current_world.poulet.mailbox.push({ "key": "move", "params": [A.left] });
+                const real_y_log = num_lines - r.ordinate + 1;
+                if (a.location.x === current_world.chicken.location.x && real_y_log === current_world.chicken.location.y && a.name === A.Name.Log_R)
+                    current_world.chicken.mailbox.push({ "key": "move", "params": [A.right] });
+                else if (a.location.x === current_world.chicken.location.x && real_y_log === current_world.chicken.location.y && a.name === A.Name.Log_L)
+                    current_world.chicken.mailbox.push({ "key": "move", "params": [A.left] });
 
             });
 
@@ -365,18 +365,18 @@ function run() {
     }
 
     function isCollision(a: A.Actor, b: A.Actor): boolean {
-        // Trouver la ligne contenant l'acteur
+        // Find the line containing the actor
         const actorLine = get_current_world().lines.find((line: A.Line) =>
             line.data.includes(a)
         );
 
         if (!actorLine) return false;
 
-        // Calculer la coordonnée Y réelle (même transformation que pour l'affichage)
-        const realY = nb_line - actorLine.ordinate + 1;
+        // Calculate real Y coordinate (same transformation as for display)
+        const realY = num_lines - actorLine.ordinate + 1;
 
-        // Vérifie si les positions correspondent (avec coordonnée Y transformée)
-        if (a.location.x !== get_current_world().poulet.location.x || realY !== get_current_world().poulet.location.y) {
+        // Check if positions match (with transformed Y coordinate)
+        if (a.location.x !== get_current_world().chicken.location.x || realY !== get_current_world().chicken.location.y) {
             return false;
         }
 
@@ -393,26 +393,26 @@ function run() {
 
     function checkCollision(): boolean {
         return get_current_world().lines.some((line: A.Line) =>
-            line.data.some((actor: A.Actor) => isCollision(actor, get_current_world().poulet))
+            line.data.some((actor: A.Actor) => isCollision(actor, get_current_world().chicken))
         );
     }
 
     function collisionProj(current_world: World): World {
-        // Copie des lignes pour éviter la modification directe
+        // Copy lines to avoid direct modification
         const updatedLines = [...current_world.lines];
 
-        // Filtrer les projectiles qui n'ont pas touché de cible
-        const remainingProj = current_world.arrayProj.filter((proj: A.Actor) => {
+        // Filter out projectiles that haven't hit a target
+        const remaining_projectiles = current_world.projectiles.filter((proj: A.Actor) => {
             let hasHit = false;
 
             updatedLines.forEach((line: A.Line) => {
-                const realY = nb_line - line.ordinate + 1;
+                const realY = num_lines - line.ordinate + 1;
                 if (realY === proj.location.y) {
-                    // Vérifier les 3 positions : gauche, centre et droite
+                    // Check 3 positions: left, center and right
                     for (let xOffset = -1; xOffset <= 1; xOffset++) {
                         const targetX = proj.location.x + xOffset;
 
-                        // Vérifier que la position est dans les limites
+                        // Check that position is within bounds
                         if (targetX >= 0 && targetX < line.data.length) {
                             const hitIndex = line.data.findIndex(actor =>
                                 actor.location.x === targetX &&
@@ -425,7 +425,7 @@ function run() {
                             );
 
                             if (hitIndex !== -1) {
-                                // Remplacer l'acteur touché par un espace vide
+                                // Replace hit actor with empty space
                                 line.data[hitIndex] = A.make_actor(
                                     { x: line.data[hitIndex].location.x, y: line.data[hitIndex].location.y },
                                     A.Name.Empty
@@ -442,8 +442,8 @@ function run() {
 
         return make_world(
             updatedLines,
-            current_world.poulet,
-            remainingProj
+            current_world.chicken,
+            remaining_projectiles
         );
     }
 
@@ -463,14 +463,14 @@ function run() {
 
         const questionX = Math.floor(term.width / 2) - 10;
         const questionY = gameOverY + 2;
-        screenBuffer.put({ x: questionX, y: questionY, attr: { color: 'white', bgColor: 'black' } }, "Voulez-vous continuer ?");
+        screenBuffer.put({ x: questionX, y: questionY, attr: { color: 'white', bgColor: 'black' } }, "Do you want to continue?");
 
         const buttonX = Math.floor(term.width / 2) - 6;
         const buttonY = questionY + 2;
 
-        screenBuffer.put({ x: buttonX, y: buttonY, attr: { color: 'green', bgColor: 'black' } }, "OUI (y)");
+        screenBuffer.put({ x: buttonX, y: buttonY, attr: { color: 'green', bgColor: 'black' } }, "YES (y)");
 
-        screenBuffer.put({ x: buttonX + 10, y: buttonY, attr: { color: 'red', bgColor: 'black' } }, "NON (n)");
+        screenBuffer.put({ x: buttonX + 10, y: buttonY, attr: { color: 'red', bgColor: 'black' } }, "NO (n)");
         screenBuffer.draw();
 
         term.grabInput(true);
@@ -497,10 +497,10 @@ function run() {
         });
     }
 
-    let maxPouletWorldY = getPouletWorldY(get_current_world());
+    let max_chicken_world_y = getChickenWorldY(get_current_world());
 
-    function getPouletWorldY(current_world: World): number {
-        return progression + (nb_line - current_world.poulet.location.y);
+    function getChickenWorldY(current_world: World): number {
+        return progression + (num_lines - current_world.chicken.location.y);
     }
 
     term.on('key', (name: string) => {
@@ -513,31 +513,31 @@ function run() {
             process.exit(0);
         }
         if (name === 'e') {
-            if (nbProj > 0) {
-                const locationProj: A.Position = {
-                    x: get_current_world().poulet.location.x,
-                    y: get_current_world().poulet.location.y - 1
+            if (num_projectiles > 0) {
+                const projectile_location: A.Position = {
+                    x: get_current_world().chicken.location.x,
+                    y: get_current_world().chicken.location.y - 1
                 };
 
 
-                // Afficher le texte mis à jour
-                const ProjectileTXT = nbProj > 1 ? " PROJECTILES." : " PROJECTILE. ";
+                // Display updated text
+                const projectile_text = num_projectiles > 1 ? " PROJECTILES." : " PROJECTILE. ";
                 screenBuffer.put({
                     x: (frameY + mapHeight) * 3,
                     y: (mapWidth / 3) + 2,
                     attr: { color: "white", bgcolor: "black" }
-                }, "IL VOUS RESTE " + nbProj + ProjectileTXT);
+                }, "REMAINING: " + num_projectiles + projectile_text);
 
-                get_current_world().arrayProj.push(A.make_actor(locationProj, A.Name.Projectile));
-                nbProj--;
+                get_current_world().projectiles.push(A.make_actor(projectile_location, A.Name.Projectile));
+                num_projectiles--;
 
 
-                // Mettre à jour la barre de projectiles
-                for (let i = 0; i < barreTaille; i++) {
-                    const char = i < nbProj ? "🔥" : " ";
+                // Update projectile bar
+                for (let i = 0; i < bar_size; i++) {
+                    const char = i < num_projectiles ? "🔥" : " ";
                     screenBuffer.put({
-                        x: barreX + (i * 2),
-                        y: barreY,
+                        x: bar_x + (i * 2),
+                        y: bar_y,
                         attr: {
                             color: "white",
                             bgcolor: "black"
@@ -548,131 +548,131 @@ function run() {
                 screenBuffer.draw();
             }
             else {
-                screenBuffer.put({ x: (frameY + mapHeight) * 3, y: (mapWidth / 3) + 2, attr: { color: "red", bgcolor: "black" } }, "      I NEED MORE BULLET.       ");
+                screenBuffer.put({ x: (frameY + mapHeight) * 3, y: (mapWidth / 3) + 2, attr: { color: "red", bgcolor: "black" } }, "      I NEED MORE BULLETS.       ");
 
             }
         }
-        else if (name === 'UP' && get_current_world().poulet.location.y > 2) {
+        else if (name === 'UP' && get_current_world().chicken.location.y > 2) {
             stop = true;
             const current_world = get_current_world();
 
-            // Appliquer le mouvement vers le haut
-            let updatedPoulet = {
-                ...current_world.poulet,
-                mailbox: [...current_world.poulet.mailbox, { "key": "move", "params": [A.up] }]
+            // Apply upward movement
+            let updated_chicken = {
+                ...current_world.chicken,
+                mailbox: [...current_world.chicken.mailbox, { "key": "move", "params": [A.up] }]
             };
 
-            let newProgression = progression;
-            let newLines = current_world.lines;
+            let new_progression = progression;
+            let new_lines = current_world.lines;
 
-            // Si on doit avancer les lignes (poulet dans la moitié haute)
-            if (updatedPoulet.location.y < nb_line / 2) {
-                newLines = newLines.map((l: A.Line) => tickLine(l));
-                newProgression++;
-                // Mouvement vers le bas automatique si pas tout en haut
-                if (updatedPoulet.location.y < mapHeight - 2) {
-                    updatedPoulet = {
-                        ...updatedPoulet,
-                        mailbox: [...updatedPoulet.mailbox, { "key": "move", "params": [A.down] }]
+            // If we need to advance lines (chicken in upper half)
+            if (updated_chicken.location.y < num_lines / 2) {
+                new_lines = new_lines.map((l: A.Line) => tickLine(l));
+                new_progression++;
+                // Automatic downward movement if not at the top
+                if (updated_chicken.location.y < mapHeight - 2) {
+                    updated_chicken = {
+                        ...updated_chicken,
+                        mailbox: [...updated_chicken.mailbox, { "key": "move", "params": [A.down] }]
                     };
                 }
             }
 
-            // Mettre à jour le poulet (après tous les mouvements)
-            const finalPoulet = updatedPoulet.update(updatedPoulet);
+            // Update chicken (after all movements)
+            const final_chicken = updated_chicken.update(updated_chicken);
 
-            // Calculer le nouveau score et progression APRÈS déplacement
-            const worldY = newProgression + (nb_line - finalPoulet.location.y);
-            let scoreIncrement = 0;
-            if (worldY > maxPouletWorldY) {
-                scoreIncrement = worldY - maxPouletWorldY;
-                maxPouletWorldY = worldY;
-                score += scoreIncrement;
+            // Calculate new score and progression AFTER movement
+            const worldY = new_progression + (num_lines - final_chicken.location.y);
+            let score_increment = 0;
+            if (worldY > max_chicken_world_y) {
+                score_increment = worldY - max_chicken_world_y;
+                max_chicken_world_y = worldY;
+                score += score_increment;
             }
 
-            // Créer le nouveau monde
+            // Create new world
             const new_world = make_world(
-                newLines,
-                finalPoulet,
-                current_world.arrayProj
+                new_lines,
+                final_chicken,
+                current_world.projectiles
             );
 
-            // Mettre à jour le buffer
+            // Update buffer
             world_buffer = [
                 ...world_buffer.slice(1),
                 new_world
             ];
 
-            // Mettre à jour les variables globales
-            progression = newProgression;
+            // Update global variables
+            progression = new_progression;
 
-            if (finalPoulet.location.y < nb_line / 2 && finalPoulet.location.y >= mapHeight - 2) {
+            if (final_chicken.location.y < num_lines / 2 && final_chicken.location.y >= mapHeight - 2) {
                 gameOver();
             }
             stop = false;
         }
-        else if (name === 'DOWN' && get_current_world().poulet.location.y < nb_line) {
+        else if (name === 'DOWN' && get_current_world().chicken.location.y < num_lines) {
             const current_world = get_current_world();
 
-            // Créer un nouveau poulet avec une mailbox mise à jour
-            const updatedPoulet = {
-                ...current_world.poulet,
-                mailbox: [...current_world.poulet.mailbox, { "key": "move", "params": [A.down] }]
+            // Create new chicken with updated mailbox
+            const updated_chicken = {
+                ...current_world.chicken,
+                mailbox: [...current_world.chicken.mailbox, { "key": "move", "params": [A.down] }]
             };
 
-            // Créer le nouveau monde
+            // Create new world
             const new_world = make_world(
                 current_world.lines,
-                updatedPoulet.update(updatedPoulet),
-                current_world.arrayProj
+                updated_chicken.update(updated_chicken),
+                current_world.projectiles
             );
 
-            // Mettre à jour le buffer de manière immutable
+            // Update buffer immutably
             world_buffer = [
                 ...world_buffer.slice(1),
                 new_world
             ];
         }
-        else if (name === 'LEFT' && get_current_world().poulet.location.x > 0) {
+        else if (name === 'LEFT' && get_current_world().chicken.location.x > 0) {
 
             const current_world = get_current_world();
 
-            // Créer un nouveau poulet avec une mailbox mise à jour
-            const updatedPoulet = {
-                ...current_world.poulet,
-                mailbox: [...current_world.poulet.mailbox, { "key": "move", "params": [A.left] }]
+            // Create new chicken with updated mailbox
+            const updated_chicken = {
+                ...current_world.chicken,
+                mailbox: [...current_world.chicken.mailbox, { "key": "move", "params": [A.left] }]
             };
 
-            // Créer le nouveau monde
+            // Create new world
             const new_world = make_world(
                 current_world.lines,
-                updatedPoulet.update(updatedPoulet),
-                current_world.arrayProj
+                updated_chicken.update(updated_chicken),
+                current_world.projectiles
             );
 
-            // Mettre à jour le buffer de manière immutable
+            // Update buffer immutably
             world_buffer = [
                 ...world_buffer.slice(1),
                 new_world
             ];
         }
-        else if (name === 'RIGHT' && get_current_world().poulet.location.x < line_length - 2) {
+        else if (name === 'RIGHT' && get_current_world().chicken.location.x < line_length - 2) {
             const current_world = get_current_world();
 
-            // Créer un nouveau poulet avec une mailbox mise à jour
-            const updatedPoulet = {
-                ...current_world.poulet,
-                mailbox: [...current_world.poulet.mailbox, { "key": "move", "params": [A.right] }]
+            // Create new chicken with updated mailbox
+            const updated_chicken = {
+                ...current_world.chicken,
+                mailbox: [...current_world.chicken.mailbox, { "key": "move", "params": [A.right] }]
             };
 
-            // Créer le nouveau monde
+            // Create new world
             const new_world = make_world(
                 current_world.lines,
-                updatedPoulet.update(updatedPoulet),
-                current_world.arrayProj
+                updated_chicken.update(updated_chicken),
+                current_world.projectiles
             );
 
-            // Mettre à jour le buffer de manière immutable
+            // Update buffer immutably
             world_buffer = [
                 ...world_buffer.slice(1),
                 new_world
