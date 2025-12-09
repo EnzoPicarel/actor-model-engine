@@ -1,31 +1,31 @@
 # Acting Shooting Star
 
-Une version terminal de *Crossy Road* basée sur un modèle d’acteurs en TypeScript.
+A terminal version of *Crossy Road* based on the Actor model in TypeScript.
 
 ---
 
-## Sujet du projet
+## Project Information
 
-- Page du sujet :  
+- Project page:  
   <https://www.labri.fr/perso/renault/working/teaching/projets/2024-25-S6-Js-Actors.php>  
-- Page du projet sur Thor :  
+- Thor project page:  
   <https://thor.enseirb-matmeca.fr/ruby/projects/1395>
 
-## Prérequis
+## Prerequisites
 
 ```bash
 npm install
 ```
 
-## Compilation
+## Build
 
 ```bash
 make build
 ```
 
-## Exécution
+## Run
 
-Mettre le terminal en plein écran puis :
+Maximize your terminal window then:
 
 ```bash
 make run
@@ -37,19 +37,19 @@ make run
 make test
 ```
 
-## Règles du jeu
+## Game Rules
 
-- Vous incarnez un poulet (`🐔`) et devez traverser un monde infini sans mourir.  
-- Contrôles clavier :  
-  - `UP` : avancer (gagne des points en montant)  
-  - `DOWN`, `LEFT`, `RIGHT` : se déplacer dans les autres directions  
-  - `E` : tirer un projectile (`🔥`)  
-  - `Q` ou `CTRL+C` : quitter la partie  
-- À chaque nouveau record de hauteur, votre score et la difficulté augmentent.  
-- Évitez les voitures (`🚗`), les rivières (`🌊`), et les arbres (`🌳`).  
-- Si vous touchez un obstacle dangereux : **Game Over**.  
-  Vous pourrez alors choisir **OUI (y)** pour rejouer ou **NON (n)** pour quitter.  
+- You play as a chicken (`🐔`) and must cross an infinite world without dying.
+- Keyboard controls:
+  - `UP`: move forward (earn points by going up)
+  - `DOWN`, `LEFT`, `RIGHT`: move in other directions
+  - `E`: shoot a projectile (`🔥`)
+  - `Q` or `CTRL+C`: quit the game
+- Each time you reach a new height record, your score and difficulty increase.
+- Avoid cars (`🚗`), rivers (`🌊`), and trees (`🌳`).
+- If you hit a dangerous obstacle: **Game Over**.
+  You can then choose **YES (y)** to play again or **NO (n)** to quit.
 
-## Auteurs
+## Authors
 
 Enzo Picarel, Raphaël Bely, Arno Donias, Thibault Abeille
