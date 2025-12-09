@@ -11,6 +11,12 @@ Une version terminal de *Crossy Road* basée sur un modèle d’acteurs en TypeS
 - Page du projet sur Thor :  
   <https://thor.enseirb-matmeca.fr/ruby/projects/1395>
 
+## Prérequis
+
+```bash
+npm install
+```
+
 ## Compilation
 
 ```bash
