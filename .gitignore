@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+*.js
+*.js.map
+*~
+
+# latex 
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.pdf
