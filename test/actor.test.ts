@@ -140,7 +140,7 @@ describe('Actor game test suite', () => {
         expect(line.data.length).toBe(60);
         expect([A.LineType.Nature, A.LineType.Road, A.LineType.River]).toContain(line.type);
 
-        // Vérifier que certains éléments sont initialisés
+        // Verify that some elements are initialized
         const hasElements = line.data.some(actor => actor !== null && actor !== undefined);
         expect(hasElements).toBe(true);
     });
@@ -177,14 +177,14 @@ describe('Actor game test suite', () => {
     });
 
     /*
-    test('Collide action should create a new actor with same properties and send a die message', () => {        // test à corriger
+    test('Collide action should create a new actor with same properties and send a die message', () => {        // test to fix
         const position = { x: 5, y: 10 };
         const actor = A.make_actor(position, A.Name.Chicken);
 
-        // Définir messageSent avec un message par défaut
+        // Define messageSent with a default message
         let messageSent: A.Message = { key: "", params: [] };
 
-        // Espionner la méthode send
+        // Spy on the send method
         const originalSend = actor.send;
         actor.send = (message) => {
             messageSent = message;
@@ -195,11 +195,11 @@ describe('Actor game test suite', () => {
         const collidedActor = actor.actions.collide(actor);
         
         // Assert
-        // 1. Vérifier que l'acteur retourné a la même position et le même nom
+        // 1. Verify that returned actor has same position and name
         expect(collidedActor.location).toEqual(position);
         expect(collidedActor.name).toBe(A.Name.Chicken);
 
-        // 2. Vérifier que le message "die" a été envoyé
+        // 2. Verify that "die" message was sent
         expect(messageSent).not.toBeNull();
         expect(messageSent.key).toBe("die");
         expect(messageSent.params).toEqual([]);
