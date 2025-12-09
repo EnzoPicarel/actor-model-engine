@@ -9,7 +9,6 @@
         "checkJs": true,
         "declaration": true,
         "forceConsistentCasingInFileNames": true,
-        "rootDir": ".",
         "outDir": "./dist",
         "preserveConstEnums": true,
         "importHelpers": true,
