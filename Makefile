@@ -3,8 +3,6 @@ all: eslint build test
 build:
 	@echo "Building files..."
 	@npx tsc -p tsconfig.json
-	@npx tsc src/actor.ts
-	@npx tsc src/world.ts
 
 eslint:
 	@echo "Running ESLint..."
@@ -24,8 +22,14 @@ watch:
 
 clean:
 	@echo "Cleaning up..."
-	@rm -f *~ src/*~ src/*.js test/*~ html/*~
-	@rm -rf dist/*
+	@rm -f *~ src/*~ src/*.js src/*.js.map test/*~ test/*.js test/*.js.map html/*~
+	@rm -rf dist/
+	@rm -rf coverage/
+	@rm -rf .nyc_output/
+	@rm -f *.tsbuildinfo
+	@rm -f report/*.aux report/*.log report/*.out report/*.toc report/*.synctex.gz report/*.fdb_latexmk report/*.fls report/*.pdf
+	@rm -f *.aux *.log *.out *.toc *.synctex.gz *.fdb_latexmk *.fls
+	@echo "All generated files cleaned!"
 
 rapport:
 	pdflatex report/main.tex
