@@ -31,10 +31,10 @@ clean:
 	@rm -f *.aux *.log *.out *.toc *.synctex.gz *.fdb_latexmk *.fls
 	@echo "All generated files cleaned!"
 
-rapport:
+report:
 	pdflatex report/main.tex
 	pdflatex report/main.tex
 	mv main.* report/
 	evince report/main.pdf&
 
-.PHONY: all archive build clean eslint parcel test run watch rapport
+.PHONY: all archive build clean eslint parcel test run watch report
