@@ -1,55 +1,98 @@
-# Acting Shooting Star
+<div align="center">
+  <h3 align="center">Actor Model Engine</h3>
 
-A terminal version of *Crossy Road* based on the Actor model in TypeScript.
+  <p align="center">
+    A terminal-based <strong>Crossy Road</strong> clone built with the <strong>Actor Model</strong> in TypeScript.
+    <br />
+    <a href="#-getting-started"><strong>Get Started »</strong></a>
+  </p>
+  
+  ![CI Status](https://img.shields.io/badge/build-passing-brightgreen)
+  ![License](https://img.shields.io/badge/license-MIT-blue)
+</div>
 
----
+## 🔍 About The Project
+This project is an infinite arcade hopper game played directly in the terminal.
 
-## Project Information
+Unlike traditional game loops that run sequentially, this engine utilizes the **Actor Model** paradigm. Each game entity (Chicken, Car, Log) operates as an independent actor with its own private state, communicating exclusively through asynchronous message passing. This architecture simulates concurrency and separates logic from rendering.
 
-- Project page:  
-  <https://www.labri.fr/perso/renault/working/teaching/projets/2024-25-S6-Js-Actors.php>  
-- Thor project page:  
-  <https://thor.enseirb-matmeca.fr/ruby/projects/1395>
+*Built as a Semester 6 project at ENSEIRB-MATMECA.*
 
-## Prerequisites
+### 🛠 Built With
+* **Language:** TypeScript
+* **Runtime:** Node.js
+* **Paradigm:** Actor Model (Event-Driven Concurrency)
+* **Rendering:** [Terminal Kit](https://github.com/cronvel/terminal-kit)
+* **Test Suite:** Jest
 
-```bash
-npm install
+## 📐 Architecture
+
+### Technical Highlights
+* **Custom Actor System:** The actor system is built from scratch without external concurrency libraries. It uses a `mailbox` pattern (message queues) where every entity is an `Actor` type processing a stream of `Message` objects.
+* **Terminal Rendering:** Graphics are rendered using `terminal-kit`, utilizing full-screen mode, cursor management, and ANSI styling to create a glitch-free TUI experience.
+* **Concurrency:** The system decouples the "Brain" (Logic) from the "Body" (View). Actors communicate asynchronously via message passing, preventing blocking operations during the game loop.
+
+### File Organization
+```text
+├── Makefile                # Build automation (build, run, test)
+├── package.json            # Dependencies (terminal-kit, typescript, jest)
+├── src/
+│   ├── actor.ts            # Core Actor Model (Mailbox, Message Types, Entity Logic)
+│   └── world.ts            # Game Loop, World Generation, and Rendering System
+├── test/                   # Unit tests (Jest)
+└── report/                 # Project documentation (LaTeX)
 ```
 
-## Build
+## 🚀 Getting Started
 
-```bash
-make build
-```
+### Prerequisites
+* **Node.js** (v16+)
+* **npm**
+* **Make**
 
-## Run
+### Installation & Execution
 
-Maximize your terminal window then:
+1.  **Install Dependencies**
+    ```bash
+    npm install
+    ```
 
-```bash
-make run
-```
+2.  **Build the Project**
+    ```bash
+    make build
+    ```
 
-## Tests
+3.  **Run the Game**
+    *Maximize your terminal window.*
+    ```bash
+    make run
+    ```
 
+## ⚡ Controls & Rules
+
+**The Goal:** Cross an infinite procedural world without dying. Score points by moving forward.
+
+* **🐔 Movement:**
+    * `UP`: Move forward (Score +1)
+    * `DOWN`/`LEFT`/`RIGHT`: Navigate obstacles
+* **🔥 Actions:**
+    * `E`: Shoot projectile
+    * `Q` / `Ctrl+C`: Quit
+* **💀 Hazards:**
+    * Avoid Cars (`⬛`), Water (`🟦`), and Trees (`🟩`).
+    * **Progression:** Reaching new distance records increases game speed and difficulty.
+
+## 🧪 Tests
+Run the unit test suite to verify actor communication and logic:
 ```bash
 make test
 ```
 
-## Game Rules
+## 👥 Authors
+* **Enzo Picarel**
+* **Raphaël Bely**
+* **Arno Donias**
+* **Thibault Abeille**
 
-- You play as a chicken (`🐔`) and must cross an infinite world without dying.
-- Keyboard controls:
-  - `UP`: move forward (earn points by going up)
-  - `DOWN`, `LEFT`, `RIGHT`: move in other directions
-  - `E`: shoot a projectile (`🔥`)
-  - `Q` or `CTRL+C`: quit the game
-- Each time you reach a new height record, your score and difficulty increase.
-- Avoid cars (`🚗`), rivers (`🌊`), and trees (`🌳`).
-- If you hit a dangerous obstacle: **Game Over**.
-  You can then choose **YES (y)** to play again or **NO (n)** to quit.
-
-## Authors
-
-Enzo Picarel, Raphaël Bely, Arno Donias, Thibault Abeille
+---
+*Original Project Specs: [Labri Subject Page](https://www.labri.fr/perso/renault/working/teaching/projets/2024-25-S6-Js-Actors.php)*
