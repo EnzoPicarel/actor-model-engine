@@ -36,11 +36,11 @@ Unlike traditional game loops that run sequentially, this engine utilizes the **
 ```text
 ├── Makefile                # Build automation (build, run, test)
 ├── package.json            # Dependencies (terminal-kit, typescript, jest)
+├── dist/                   # Compiled artifacts (src + test js)
 ├── src/
 │   ├── actor.ts            # Core Actor Model (Mailbox, Message Types, Entity Logic)
 │   └── world.ts            # Game Loop, World Generation, and Rendering System
-├── test/                   # Unit tests (Jest)
-└── report/                 # Project documentation (LaTeX)
+└── test/                   # Unit tests (Jest)
 ```
 
 ## 🚀 Getting Started
@@ -50,37 +50,44 @@ Unlike traditional game loops that run sequentially, this engine utilizes the **
 * **npm**
 * **Make**
 
-### Installation & Execution
+### Installation & Build
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/EnzoPicarel/actor-model-engine.git
+   cd actor-model-engine
+   ```
 
-1.  **Install Dependencies**
-    ```bash
-    npm install
-    ```
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-2.  **Build the Project**
-    ```bash
-    make build
-    ```
+3. **Build the Project**
+   ```bash
+   make build
+   ```
 
-3.  **Run the Game**
-    *Maximize your terminal window.*
-    ```bash
-    make run
-    ```
+## ⚡ Execution
 
-## ⚡ Controls & Rules
+To play the game, maximize your terminal window for the best experience (avoid rendering glitches), then run:
+
+```bash
+make run
+```
+
+## 📜 Controls & Rules
 
 **The Goal:** Cross an infinite procedural world without dying. Score points by moving forward.
 
-* **🐔 Movement:**
+* **Movement:**
     * `UP`: Move forward (Score +1)
     * `DOWN`/`LEFT`/`RIGHT`: Navigate obstacles
-* **🔥 Actions:**
-    * `E`: Shoot projectile
+* **Actions:**
+    * `E`: Shoot projectile (`🔥`)
     * `Q` / `Ctrl+C`: Quit
-* **💀 Hazards:**
+* **Obstacles:**
     * Avoid Cars (`⬛`), Water (`🟦`), and Trees (`🟩`).
-    * **Progression:** Reaching new distance records increases game speed and difficulty.
+* **Progression:** Reaching new distance records increases game speed and difficulty.
 
 ## 🧪 Tests
 Run the unit test suite to verify actor communication and logic:
